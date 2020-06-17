@@ -1,5 +1,5 @@
 import { TaskCreateAsync, TaskActionAsyncType } from "./task.type";
-import { take, put, call, takeEvery, select } from "redux-saga/effects";
+import { put, call, takeEvery, select } from "redux-saga/effects";
 import { Task } from "../reducers/tasks.type";
 import { generateID } from "../utils";
 import { createTask } from "../actions/task";
@@ -17,9 +17,9 @@ function* appendTask(action: TaskActionAsyncType) {
   };
   yield put(createTask(newTask));
   try {
-    const serverRes = yield call(addTaskServer, newTask);
-    console.log({ serverRes });
-    yield call(markTaskSync, serverRes.id);
+    const res = yield call(addTaskServer, newTask);
+    console.log({ res });
+    yield call(markTaskSync, res.id);
   } catch (error) {
     console.log(error);
   }

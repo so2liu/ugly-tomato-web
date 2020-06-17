@@ -1,11 +1,11 @@
 import React from "react";
 import TaskCard from "./TaskCard";
-import { createTaskAsync } from "../actions/task";
 import { Task } from "../reducers/tasks.type";
+import { startTimer } from "../actions/timer";
 
 interface props {
   tasks: Task[];
-  onCreateTask: typeof createTaskAsync;
+  onStartTimer: typeof startTimer;
 }
 const TaskList = (props: props) => {
   const { tasks } = props;
@@ -13,7 +13,7 @@ const TaskList = (props: props) => {
     <>
       <h3>Task List</h3>
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
+        <TaskCard key={task.id} task={task} onStartTimer={props.onStartTimer} />
       ))}
     </>
   );

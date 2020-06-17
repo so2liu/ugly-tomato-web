@@ -7,7 +7,8 @@ import rootReducer from "./reducers";
 import rootSaga from "./sagas";
 import { Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import WrapJSON from "./components/WrapJSON";
+import ControlLogin from "./containers/ControlLogin";
+import AppHeader from "./components/AppHeader";
 
 function App() {
   const sagaMiddleware = createSagaMiddleware();
@@ -17,7 +18,8 @@ function App() {
   return (
     <Provider store={store}>
       <Container>
-        <h1>Ugly Tomato for QQ</h1>
+        <AppHeader />
+        <ControlLogin />
         <TaskPage />
       </Container>
     </Provider>

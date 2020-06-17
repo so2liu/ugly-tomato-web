@@ -1,7 +1,8 @@
 export interface User {
   uid: string;
-  displayName: string;
+  displayName: string | null;
   avatar: string | null;
+  isSignedIn: boolean;
 }
 
 export const UserSet = "set user info";

@@ -1,5 +1,11 @@
-import { TimerActionType, TimerStart } from "../reducers/timer.types";
+import {
+  TimerActionType,
+  TimerStart,
+  TimerTick,
+  TimerStop,
+} from "../reducers/timer.types";
 import { Task } from "../reducers/tasks.type";
+import { TimerStopAsync, TimerActionAsync } from "../sagas/timer.type";
 
 export const startTimer = (
   uid: string,
@@ -13,4 +19,19 @@ export const startTimer = (
     planMinutes,
     task,
   },
+});
+
+export const tickTimer = (): TimerActionType => ({
+  name: "timer",
+  type: TimerTick,
+});
+
+export const stopTimer = (): TimerActionType => ({
+  name: "timer",
+  type: TimerStop,
+});
+
+export const stopTimerAsync = (): TimerActionAsync => ({
+  name: "timer",
+  type: TimerStopAsync,
 });

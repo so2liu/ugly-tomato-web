@@ -4,6 +4,7 @@ const initUser = (): User => ({
   uid: "placeholder2",
   displayName: "",
   avatar: null,
+  isSignedIn: false,
 });
 
 const user = (state: User = initUser(), action: UserAction): User => {

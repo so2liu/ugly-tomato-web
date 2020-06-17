@@ -3,11 +3,13 @@ import { firebaseConfig } from "./.env";
 import firebase from "firebase/app";
 import "firebase/analytics";
 import "firebase/firestore";
+import "firebase/auth";
 import { Task } from "../reducers/tasks.type";
-import { TaskSyncType } from "./firebase.type";
+import { TaskSyncType, TomatoSyncType } from "./firebase.type";
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { syncTask } from "../actions/task";
+import { Timer } from "../reducers/timer.types";
 
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
@@ -15,6 +17,20 @@ firebase.analytics();
 export default firebase;
 
 const db = firebase.firestore();
+
+export const addTimerServer = async (tomato: Timer) => {
+  const timerSync: TomatoSyncType = {
+    ...tomato,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    version: "v1",
+  };
+  const docRef = await db.collection("tomatoes").add(timerSync);
+  return { id: docRef.id, path: docRef.path };
+};
+
+export const markTimerSync = (firestoreID: string) => {
+  return db.collection("tomatoes").doc(firestoreID).update({ isSync: true });
+};
 
 export const addTaskServer = async (task: Task) => {
   const taskSync: TaskSyncType = {
@@ -51,7 +67,8 @@ const useWebsocket = <T>(
     return () => {
       unsubsribe();
     };
-  }, [collection]);
+  }, [collection, equalCondition]);
+
   return state;
 };
 
