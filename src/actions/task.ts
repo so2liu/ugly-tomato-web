@@ -1,20 +1,24 @@
-import { TaskActionAsyncType, TaskCreateAsync } from "../sagas/task.type";
+import { TaskCreateAsync, TaskDoneAsync } from "../sagas/task.type";
 import {
   TaskActionType,
   TaskCreate,
   Task,
   TaskSync,
+  TaskDone,
+  TaskTomatoDone,
 } from "../reducers/tasks.type";
 
 export const createTaskAsync = (
   title: string,
-  label: string[]
-): TaskActionAsyncType => ({
+  label: string[],
+  minuteEachTomato: number
+): TaskCreateAsync => ({
   name: "task",
   type: TaskCreateAsync,
   payload: {
     title,
     label,
+    minuteEachTomato,
   },
 });
 
@@ -28,4 +32,32 @@ export const syncTask = (serverTasks: Task[]): TaskActionType => ({
   name: "task",
   type: TaskSync,
   payload: serverTasks,
+});
+
+export const doneTask = (id: string, value: boolean): TaskActionType => ({
+  name: "task",
+  type: TaskDone,
+  payload: { id, value },
+});
+
+export const doneTaskAsync = (
+  id: string,
+  firestoreID: string,
+  value: boolean
+): TaskDoneAsync => ({
+  name: "task",
+  type: TaskDoneAsync,
+  payload: { id, firestoreID, value },
+});
+
+export const doneTomato = (
+  id: string,
+  plusMinutes: number
+): TaskActionType => ({
+  name: "task",
+  type: TaskTomatoDone,
+  payload: {
+    id,
+    plusMinutes,
+  },
 });

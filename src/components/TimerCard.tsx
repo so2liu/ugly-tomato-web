@@ -19,7 +19,9 @@ function TimerCard(props: TimerCard) {
           <Card.Title>
             {new Date(timer.remainSecs * 1000).toISOString().substr(11, 8)}
           </Card.Title>
-          <Button onClick={onStopTimer}>Stop Working</Button>
+          {["running", "timeout"].includes(timer.status) && (
+            <Button onClick={onStopTimer}>Stop Working</Button>
+          )}
           <WrapJSON json={timer} />
         </Card.Body>
       </Card>

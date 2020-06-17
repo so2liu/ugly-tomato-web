@@ -1,5 +1,5 @@
 import { firebaseConfig } from "./.env";
-
+import _ from "lodash";
 import firebase from "firebase/app";
 import "firebase/analytics";
 import "firebase/firestore";
@@ -29,7 +29,33 @@ export const addTimerServer = async (tomato: Timer) => {
 };
 
 export const markTimerSync = (firestoreID: string) => {
-  return db.collection("tomatoes").doc(firestoreID).update({ isSync: true });
+  return markServer(firestoreID, "tomatoes", { isSync: true });
+};
+
+export const markTaskDoneServer = (firestoreID: string, value: boolean) => {
+  return markServer(firestoreID, "tasks", { isDone: value });
+};
+
+const markServer = (
+  firestoreID: string,
+  collection: string,
+  toUpdated: { [key: string]: boolean }
+) => {
+  return db.collection(collection).doc(firestoreID).update(toUpdated);
+};
+
+export const updateTask = (
+  firestoreID: string,
+
+  task: Task
+) => {
+  const taskSync: TaskSyncType = {
+    ...task,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    version: "v1",
+    isSync: true,
+  };
+  return db.collection("tasks").doc(firestoreID).update(taskSync);
 };
 
 export const addTaskServer = async (task: Task) => {
@@ -58,11 +84,10 @@ const useWebsocket = <T>(
       .where(...equalCondition)
       .orderBy("updatedAt", "desc")
       .onSnapshot((snapshot) => {
-        setState(
-          snapshot.docs.map((doc) => {
-            return { ...(doc.data() as T), firestoreID: doc.id };
-          })
-        );
+        const newState = snapshot.docs.map((doc) => {
+          return { ...(doc.data() as T), firestoreID: doc.id };
+        });
+        if (!_.isEqual(state, newState)) setState(newState);
       });
     return () => {
       unsubsribe();
@@ -77,5 +102,5 @@ export const useSyncTasks = (uid: string) => {
   const tasks = useWebsocket([] as TaskSyncType[], "tasks", ["uid", "==", uid]);
   useEffect(() => {
     dispatch(syncTask(tasks));
-  });
+  }, [tasks, dispatch, syncTask]);
 };

@@ -10,6 +10,11 @@ function NewTask(props: NewTask) {
   const { submitNewTask } = props;
 
   const [title, resetTitle, TitleInput] = useInput("Task Name");
+  const [
+    minuteEachTomato,
+    resetMinuteEachTomato,
+    MinuteEachTomatoInput,
+  ] = useInput("Minutes per Tomato", "number");
   const [tags, resetTags, TagInput, TagBadge] = useTags(
     "Tag Names",
     "Tags should be split with space."
@@ -17,9 +22,10 @@ function NewTask(props: NewTask) {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    submitNewTask(title, tags);
+    submitNewTask(title, tags, Number(minuteEachTomato));
     resetTitle();
     resetTags();
+    resetMinuteEachTomato();
   }
   return (
     <>
@@ -30,6 +36,7 @@ function NewTask(props: NewTask) {
           {TagInput}
           {TagBadge}
         </Form.Group>
+        <Form.Group controlId="minuteInput">{MinuteEachTomatoInput}</Form.Group>
         <Button type="submit">Add</Button>
       </Form>
     </>

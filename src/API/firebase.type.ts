@@ -4,7 +4,6 @@ import { Timer } from "../reducers/timer.types";
 export interface TaskSyncType extends Task {
   updatedAt: firebase.firestore.FieldValue;
   version: "v1";
-  firestoreID?: string;
 }
 
 export interface TomatoSyncType extends Timer {

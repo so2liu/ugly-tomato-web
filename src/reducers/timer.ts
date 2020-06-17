@@ -29,6 +29,7 @@ function timer(state: Timer = initTimer(), action: TimerActionType): Timer {
         draft.planMinutes = action.payload.planMinutes;
         draft.task = action.payload.task ?? null;
         draft.remainSecs = draft.planMinutes * 60;
+        draft.status = "running";
       });
 
     case TimerTick:

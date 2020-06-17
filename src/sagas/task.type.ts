@@ -1,11 +1,23 @@
 export const TaskCreateAsync = "append a async task";
-interface TaskCreateAsync {
+export interface TaskCreateAsync {
   name: "task";
   type: typeof TaskCreateAsync;
   payload: {
     title: string;
     label: string[];
+    minuteEachTomato: number;
   };
 }
 
-export type TaskActionAsyncType = TaskCreateAsync;
+export const TaskDoneAsync = "mark a task as done in server";
+export interface TaskDoneAsync {
+  name: "task";
+  type: typeof TaskDoneAsync;
+  payload: {
+    id: string;
+    firestoreID: string;
+    value: boolean;
+  };
+}
+
+// export type TaskActionAsyncType = TaskCreateAsync | TaskDoneAsync;

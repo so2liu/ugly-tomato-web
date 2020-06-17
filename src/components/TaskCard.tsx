@@ -5,18 +5,24 @@ import { Task } from "../reducers/tasks.type";
 import { startTimer } from "../actions/timer";
 import { useSelector } from "react-redux";
 import { RootState } from "../reducers";
+import { doneTaskAsync } from "../actions/task";
 
 interface Props {
   task: Task;
   onStartTimer: typeof startTimer;
+  onFinishTask: typeof doneTaskAsync;
 }
 const TaskCard = (props: Props) => {
-  const { task, onStartTimer } = props;
-  const { title, isSync } = task;
+  const { task, onStartTimer, onFinishTask } = props;
+  const { title, isSync, isDone, id, firestoreID } = task;
   const uid = useSelector((state: RootState) => state.user.uid);
 
   function handleStartTimer() {
-    onStartTimer(uid, 0.25, task);
+    onStartTimer(uid, task.minuteEachTomato, task);
+  }
+
+  function handleToggleDone() {
+    onFinishTask(id, firestoreID, !isDone);
   }
 
   return (
@@ -25,6 +31,15 @@ const TaskCard = (props: Props) => {
         <Card.Body>
           <Card.Title>{title}</Card.Title>
           <Button onClick={handleStartTimer}>Start</Button>
+          {isDone ? (
+            <Button onClick={handleToggleDone} variant="warning">
+              Reopen
+            </Button>
+          ) : (
+            <Button onClick={handleToggleDone} variant="success">
+              Finish
+            </Button>
+          )}
           <WrapJSON json={props.task} />
         </Card.Body>
       </Card>
