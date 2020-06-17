@@ -1,24 +1,30 @@
 import { TaskCreateAsync, TaskActionAsyncType } from "./task.type";
-import { take, put, call, takeEvery } from "redux-saga/effects";
+import { take, put, call, takeEvery, select } from "redux-saga/effects";
 import { Task } from "../reducers/tasks.type";
 import { generateID } from "../utils";
 import { createTask } from "../actions/task";
-import { addTaskServer } from "../API/firebase";
+import { addTaskServer, markTaskSync } from "../API/firebase";
+import { RootState } from "../reducers";
 
-function* appendTask() {
-  const action: TaskActionAsyncType = yield take(TaskCreateAsync);
+function* appendTask(action: TaskActionAsyncType) {
+  const uid: string = yield select((state: RootState) => state.user.uid);
   const newTask: Task = {
-    uid: action.payload.uid,
+    uid: uid,
     id: generateID("task"),
     title: action.payload.title,
     label: action.payload.label,
     isSync: false,
   };
   yield put(createTask(newTask));
-  const serverPath = yield call(addTaskServer, newTask);
-  console.log(serverPath);
+  try {
+    const serverRes = yield call(addTaskServer, newTask);
+    console.log({ serverRes });
+    yield call(markTaskSync, serverRes.id);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export default function* watchTask() {
-  takeEvery(TaskCreateAsync, appendTask);
+  yield takeEvery(TaskCreateAsync, appendTask);
 }

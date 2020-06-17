@@ -3,7 +3,6 @@ interface TaskCreateAsync {
   name: "task";
   type: typeof TaskCreateAsync;
   payload: {
-    uid: string;
     title: string;
     label: string[];
   };

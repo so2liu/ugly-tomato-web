@@ -1,5 +1,5 @@
 import React from "react";
-import Task from "./pages/Task";
+import TaskPage from "./pages/TaskPage";
 import { createStore, applyMiddleware } from "redux";
 import { Provider } from "react-redux";
 import createSagaMiddleware from "redux-saga";
@@ -7,6 +7,7 @@ import rootReducer from "./reducers";
 import rootSaga from "./sagas";
 import { Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import WrapJSON from "./components/WrapJSON";
 
 function App() {
   const sagaMiddleware = createSagaMiddleware();
@@ -17,7 +18,7 @@ function App() {
     <Provider store={store}>
       <Container>
         <h1>Ugly Tomato for QQ</h1>
-        <Task />
+        <TaskPage />
       </Container>
     </Provider>
   );

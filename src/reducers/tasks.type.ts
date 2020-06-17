@@ -8,6 +8,7 @@ export interface Task {
 
 export const TaskCreate = "append a task";
 export const TaskMarkSync = "mark a task as sync with server";
+export const TaskSync = "sync task list with server";
 interface TaskCreate {
   name: "task";
   type: typeof TaskCreate;
@@ -22,4 +23,10 @@ interface TaskMarkSync {
   };
 }
 
-export type TaskActionType = TaskCreate | TaskMarkSync;
+interface TaskSync {
+  name: "task";
+  type: typeof TaskSync;
+  payload: Task[];
+}
+
+export type TaskActionType = TaskCreate | TaskMarkSync | TaskSync;

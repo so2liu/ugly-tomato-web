@@ -1,9 +1,6 @@
 import { all } from "redux-saga/effects";
-
-function* helloSaga() {
-  console.log("Hello Sagas!");
-}
+import watchTask from "./task";
 
 export default function* rootSaga() {
-  yield all([helloSaga()]);
+  yield all([watchTask()]);
 }
