@@ -3,7 +3,7 @@ import { Card, Button } from "react-bootstrap";
 import { Timer } from "../reducers/timer.types";
 import WrapJSON from "./WrapJSON";
 import { stopTimerAsync } from "../actions/timer";
-import { useNotification } from "../hooks/UI";
+import { useNotification, useAskBeforeClose } from "../hooks/UI";
 
 interface TimerCard {
   timer: Timer;
@@ -15,6 +15,12 @@ function TimerCard(props: TimerCard) {
   useNotification("Timeout! Take a break.", () => timer.status === "timeout", [
     timer.status,
   ]);
+
+  useAskBeforeClose(
+    "Close page with running timer will lost your current timer data. Do you really want to close page?",
+    () => timer.status === "running",
+    [timer.status]
+  );
 
   return (
     <>

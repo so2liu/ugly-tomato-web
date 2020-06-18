@@ -4,8 +4,8 @@ import { Task, TaskDone } from "../reducers/tasks.type";
 import { generateID } from "../utils";
 import { createTask, doneTask } from "../actions/task";
 import {
-  addTaskServer,
-  markTaskSync,
+  addTaskOnServer,
+  markTaskSyncOnServer,
   markTaskDoneServer,
 } from "../API/firebase";
 import { RootState } from "../reducers";
@@ -26,9 +26,9 @@ function* appendTask(action: TaskCreateAsync) {
   };
   yield put(createTask(newTask));
   try {
-    const res = yield call(addTaskServer, newTask);
+    const res = yield call(addTaskOnServer, newTask);
     console.log({ res });
-    yield call(markTaskSync, res.id);
+    yield call(markTaskSyncOnServer, res.id);
   } catch (error) {
     console.log(error);
   }

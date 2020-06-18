@@ -71,3 +71,23 @@ export function useNotification(
     }
   }, deps);
 }
+
+export function useAskBeforeClose(
+  title: string,
+  condition: () => boolean,
+  deps: any[]
+) {
+  useEffect(() => {
+    if (condition()) {
+      window.onbeforeunload = function (e: BeforeUnloadEvent) {
+        e = e || window.event;
+        if (e) {
+          e.returnValue = title;
+        }
+        return title;
+      };
+    } else {
+      window.onbeforeunload = null;
+    }
+  }, deps);
+}

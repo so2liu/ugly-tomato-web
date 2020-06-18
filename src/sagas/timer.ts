@@ -3,7 +3,11 @@ import { tickTimer, stopTimer } from "../actions/timer";
 import { RootState } from "../reducers";
 import { TimerStart, Timer } from "../reducers/timer.types";
 import { TimerStopAsync } from "./timer.type";
-import { addTimerServer, markTimerSync, updateTask } from "../API/firebase";
+import {
+  addTimerOnServer,
+  markTimerAsSyncOnServer,
+  updateTaskOnServer,
+} from "../API/firebase";
 import { Task } from "../reducers/tasks.type";
 import { doneTomato } from "../actions/task";
 
@@ -35,10 +39,10 @@ function* stopTimerChain() {
   const newTask: Task = yield select((state: RootState) =>
     state.tasks.find((t) => t.id === taskID)
   );
-  yield call(updateTask, task.firestoreID, newTask);
+  yield call(updateTaskOnServer, task.firestoreID, newTask);
 
-  const res = yield call(addTimerServer, timer);
-  yield call(markTimerSync, res.id);
+  const res = yield call(addTimerOnServer, timer);
+  yield call(markTimerAsSyncOnServer, res.id);
 }
 
 export function* watchStopTimer() {
