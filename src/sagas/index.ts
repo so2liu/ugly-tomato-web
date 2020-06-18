@@ -1,5 +1,5 @@
 import { all } from "redux-saga/effects";
-import { watchTaskCreate, watchTaskFinish } from "./task";
+import { watchTaskCreate, watchTaskFinish, watchTaskDelete } from "./task";
 import { watchTick, watchStopTimer } from "./timer";
 
 export default function* rootSaga() {
@@ -8,5 +8,6 @@ export default function* rootSaga() {
     watchTick(),
     watchStopTimer(),
     watchTaskFinish(),
+    watchTaskDelete(),
   ]);
 }

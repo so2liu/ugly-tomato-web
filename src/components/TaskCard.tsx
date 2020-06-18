@@ -5,16 +5,17 @@ import { Task } from "../reducers/tasks.type";
 import { startTimer } from "../actions/timer";
 import { useSelector } from "react-redux";
 import { RootState } from "../reducers";
-import { doneTaskAsync } from "../actions/task";
+import { doneTaskAsync, deleteTaskAsync } from "../actions/task";
 import Tags from "./Tags";
 
 interface Props {
   task: Task;
   onStartTimer: typeof startTimer;
   onFinishTask: typeof doneTaskAsync;
+  onDeleteTask: typeof deleteTaskAsync;
 }
 const TaskCard = (props: Props) => {
-  const { task, onStartTimer, onFinishTask } = props;
+  const { task, onStartTimer, onFinishTask, onDeleteTask } = props;
   const { title, isSync, isDone, id, firestoreID } = task;
   const uid = useSelector((state: RootState) => state.user.uid);
   const status = useSelector((state: RootState) => state.timer.status);
@@ -25,6 +26,10 @@ const TaskCard = (props: Props) => {
 
   function handleToggleDone() {
     onFinishTask(id, firestoreID, !isDone);
+  }
+
+  function handleDelete() {
+    onDeleteTask(firestoreID);
   }
 
   return (
@@ -48,6 +53,9 @@ const TaskCard = (props: Props) => {
               Finish
             </Button>
           )}
+          <Button onClick={handleDelete} variant="danger">
+            Delete
+          </Button>
         </Card.Body>
       </Card>
       <br />

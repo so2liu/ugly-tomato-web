@@ -23,7 +23,7 @@ export default firebase;
 
 export const db = firebase.firestore();
 
-// general
+// ===== general =====
 const markOnServer = (
   firestoreID: string,
   collection: string,
@@ -35,7 +35,7 @@ const markOnServer = (
 const setOnServer = async (
   collection: CollectionName,
   toAdd: RawStateType,
-  firebaseID?: string
+  firestoreID?: string
 ) => {
   const readyAdd = {
     ...toAdd,
@@ -43,18 +43,30 @@ const setOnServer = async (
     version: "v1",
     isSync: true,
   };
-  if (firebaseID) {
-    await db.collection(collection).doc(firebaseID).set(readyAdd);
+  if (firestoreID) {
+    await db.collection(collection).doc(firestoreID).set(readyAdd);
     return {
-      id: firebaseID,
-      path: `${collection}/${firebaseID}`,
+      id: firestoreID,
+      path: `${collection}/${firestoreID}`,
     };
   } else {
     const docRef = await db.collection(collection).add(readyAdd);
     return { id: docRef.id, path: docRef.path };
   }
 };
-// tasks
+
+const deleteOnServer = async (
+  collection: CollectionName,
+  firebaseID: string
+) => {
+  await db.collection(collection).doc(firebaseID).delete();
+  return {
+    id: firebaseID,
+    path: `${collection}/${firebaseID}`,
+  };
+};
+
+// ===== tasks =====
 
 export const markTaskDoneServer = (firestoreID: string, value: boolean) => {
   return markOnServer(firestoreID, "tasks", { isDone: value });
@@ -71,7 +83,12 @@ export const addTaskOnServer = (task: Task) => {
 export const markTaskSyncOnServer = (firestoreID: string) => {
   return db.collection("tasks").doc(firestoreID).update({ isSync: true });
 };
-// timer
+
+export const deleteTaskOnServer = (firestoreID: string) => {
+  return deleteOnServer("tasks", firestoreID);
+};
+
+// ===== timer =====
 export const markTimerAsSyncOnServer = (firestoreID: string) => {
   return markOnServer(firestoreID, "tomatoes", { isSync: true });
 };

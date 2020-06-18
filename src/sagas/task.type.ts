@@ -20,4 +20,11 @@ export interface TaskDoneAsync {
   };
 }
 
+export const TaskDeleteAsync = "delete a task on server";
+export interface TaskDeleteAsync {
+  name: "task";
+  type: typeof TaskDeleteAsync;
+  payload: { firestoreID: string };
+}
+
 // export type TaskActionAsyncType = TaskCreateAsync | TaskDoneAsync;

@@ -2,7 +2,7 @@ import React, { useState, useReducer } from "react";
 import TaskCard from "./TaskCard";
 import { Task } from "../reducers/tasks.type";
 import { startTimer } from "../actions/timer";
-import { doneTaskAsync } from "../actions/task";
+import { doneTaskAsync, deleteTaskAsync } from "../actions/task";
 import produce from "immer";
 import { ButtonGroup, Button } from "react-bootstrap";
 
@@ -10,6 +10,7 @@ interface props {
   tasks: Task[];
   onStartTimer: typeof startTimer;
   onFinishTask: typeof doneTaskAsync;
+  onDeleteTask: typeof deleteTaskAsync;
 }
 const TaskList = (props: props) => {
   const { tasks } = props;
@@ -44,6 +45,7 @@ const TaskList = (props: props) => {
             task={task}
             onStartTimer={props.onStartTimer}
             onFinishTask={props.onFinishTask}
+            onDeleteTask={props.onDeleteTask}
           />
         ))}
     </>

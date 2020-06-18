@@ -1,4 +1,4 @@
-import { TaskCreateAsync, TaskDoneAsync } from "./task.type";
+import { TaskCreateAsync, TaskDoneAsync, TaskDeleteAsync } from "./task.type";
 import { put, call, takeEvery, select, delay } from "redux-saga/effects";
 import { Task, TaskDone } from "../reducers/tasks.type";
 import { generateID } from "../utils";
@@ -7,6 +7,7 @@ import {
   addTaskOnServer,
   markTaskSyncOnServer,
   markTaskDoneServer,
+  deleteTaskOnServer,
 } from "../API/firebase";
 import { RootState } from "../reducers";
 
@@ -48,4 +49,11 @@ function* finishTask(action: TaskDoneAsync) {
 
 export function* watchTaskFinish() {
   yield takeEvery(TaskDoneAsync, finishTask);
+}
+
+function* deleteTask(action: TaskDeleteAsync) {
+  yield call(deleteTaskOnServer, action.payload.firestoreID);
+}
+export function* watchTaskDelete() {
+  yield takeEvery(TaskDeleteAsync, deleteTask);
 }

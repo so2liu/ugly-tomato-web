@@ -1,4 +1,8 @@
-import { TaskCreateAsync, TaskDoneAsync } from "../sagas/task.type";
+import {
+  TaskCreateAsync,
+  TaskDoneAsync,
+  TaskDeleteAsync,
+} from "../sagas/task.type";
 import {
   TaskActionType,
   TaskCreate,
@@ -60,4 +64,10 @@ export const doneTomato = (
     id,
     plusMinutes,
   },
+});
+
+export const deleteTaskAsync = (firestoreID: string): TaskDeleteAsync => ({
+  name: "task",
+  type: TaskDeleteAsync,
+  payload: { firestoreID },
 });

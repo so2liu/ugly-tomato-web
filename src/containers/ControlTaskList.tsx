@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import { RootState } from "../reducers";
 import TaskList from "../components/TaskList";
 import { startTimer } from "../actions/timer";
-import { doneTaskAsync } from "../actions/task";
+import { doneTaskAsync, deleteTaskAsync } from "../actions/task";
 
 const mapState = (state: RootState) => ({
   tasks: state.tasks,
@@ -11,6 +11,7 @@ const mapState = (state: RootState) => ({
 const mapDispatch = {
   onStartTimer: startTimer,
   onFinishTask: doneTaskAsync,
+  onDeleteTask: deleteTaskAsync,
 };
 
 const ControlTaskList = connect(mapState, mapDispatch)(TaskList);
