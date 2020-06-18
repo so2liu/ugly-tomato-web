@@ -55,6 +55,7 @@ export const updateTask = (
     version: "v1",
     isSync: true,
   };
+  console.log(taskSync);
   return db.collection("tasks").doc(firestoreID).update(taskSync);
 };
 

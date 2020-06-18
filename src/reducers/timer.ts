@@ -4,19 +4,26 @@ import {
   TimerStart,
   TimerTick,
   TimerStop,
+  TimerStatus,
 } from "./timer.types";
 import { generateID } from "../utils";
 import produce from "immer";
+import { Task } from "./tasks.type";
 
-const initTimer = (): Timer => ({
-  uid: "placeholderUid",
+const initTimer = (
+  uid: string = "placeholder",
+  planMinutes: number = 25,
+  task: Task | null = null,
+  status: TimerStatus = "standby"
+): Timer => ({
+  uid,
   id: generateID("timer"),
   startAt: new Date(),
   endAt: null,
-  planMinutes: 25,
-  task: null,
-  status: "standby",
-  remainSecs: 25 * 60,
+  planMinutes,
+  task,
+  status,
+  remainSecs: planMinutes * 60,
   isSync: false,
 });
 
@@ -24,13 +31,8 @@ function timer(state: Timer = initTimer(), action: TimerActionType): Timer {
   if (action.name !== "timer") return state;
   switch (action.type) {
     case TimerStart:
-      return produce(state, (draft) => {
-        draft.uid = action.payload.uid;
-        draft.planMinutes = action.payload.planMinutes;
-        draft.task = action.payload.task ?? null;
-        draft.remainSecs = draft.planMinutes * 60;
-        draft.status = "running";
-      });
+      const { uid, planMinutes, task } = action.payload;
+      return initTimer(uid, planMinutes, task, "running");
 
     case TimerTick:
       return produce(state, (draft) => {

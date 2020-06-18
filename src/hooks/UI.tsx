@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Badge } from "react-bootstrap";
 import { UseInputType, UseTagsType } from "./UI.type";
 
@@ -54,4 +54,20 @@ export function useTags(
     </>
   );
   return [list, reset, Input, Tags];
+}
+
+export function useNotification(
+  title: string,
+  condition: () => boolean,
+  deps: any[]
+) {
+  useEffect(() => {
+    if (Notification.permission == "default") Notification.requestPermission();
+  }, [Notification.permission]);
+
+  useEffect(() => {
+    if (condition()) {
+      new Notification(title);
+    }
+  }, deps);
 }

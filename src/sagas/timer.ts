@@ -31,14 +31,14 @@ function* stopTimerChain() {
     (new Date().getTime() - timer.startAt.getTime()) / 1000 / 60;
 
   yield put(doneTomato(task.id, plusMinutes));
+
   const newTask: Task = yield select((state: RootState) =>
     state.tasks.find((t) => t.id === taskID)
   );
+  yield call(updateTask, task.firestoreID, newTask);
 
   const res = yield call(addTimerServer, timer);
   yield call(markTimerSync, res.id);
-
-  yield call(updateTask, task.firestoreID, newTask);
 }
 
 export function* watchStopTimer() {

@@ -8,7 +8,6 @@ function AppHeader() {
   return (
     <>
       <h1>Ugly Tomato for {user.displayName ?? "QiQi"}</h1>
-      <WrapJSON json={user} />
     </>
   );
 }

@@ -22,6 +22,7 @@ function NewTask(props: NewTask) {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (title.trim().length === 0) return;
     submitNewTask(title, tags, Number(minuteEachTomato));
     resetTitle();
     resetTags();

@@ -8,15 +8,16 @@ import ControlTimer from "../containers/ControlTimer";
 
 function TaskPage() {
   const uid = useSelector((state: RootState) => state.user.uid);
+  const status = useSelector((state: RootState) => state.timer.status);
   useSyncTasks(uid);
   return (
     <>
       <h2>Task Page</h2>
-      <ControlTimer />
-      <br />
-      <ControlNewTask />
+      {status === "running" && <ControlTimer />}
       <br />
       <ControlTaskList />
+      <br />
+      <ControlNewTask />
     </>
   );
 }

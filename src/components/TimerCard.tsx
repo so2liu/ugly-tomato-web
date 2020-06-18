@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, Button } from "react-bootstrap";
 import { Timer } from "../reducers/timer.types";
 import WrapJSON from "./WrapJSON";
 import { stopTimerAsync } from "../actions/timer";
+import { useNotification } from "../hooks/UI";
 
 interface TimerCard {
   timer: Timer;
@@ -10,6 +11,10 @@ interface TimerCard {
 }
 function TimerCard(props: TimerCard) {
   const { timer, onStopTimer } = props;
+
+  useNotification("Timeout! Take a break.", () => timer.status === "timeout", [
+    timer.status,
+  ]);
 
   return (
     <>
@@ -22,7 +27,6 @@ function TimerCard(props: TimerCard) {
           {["running", "timeout"].includes(timer.status) && (
             <Button onClick={onStopTimer}>Stop Working</Button>
           )}
-          <WrapJSON json={timer} />
         </Card.Body>
       </Card>
     </>
