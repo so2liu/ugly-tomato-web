@@ -1,6 +1,6 @@
 import { TaskCreateAsync, TaskDoneAsync, TaskDeleteAsync } from "./task.type";
 import { put, call, takeEvery, select, delay } from "redux-saga/effects";
-import { Task, TaskDone } from "../reducers/tasks.type";
+import { Task } from "../reducers/tasks.type";
 import { generateID } from "../utils";
 import { createTask, doneTask } from "../actions/task";
 import {

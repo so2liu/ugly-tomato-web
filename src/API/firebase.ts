@@ -1,19 +1,10 @@
 import { firebaseConfig } from "./.env";
-import _ from "lodash";
-import firebase, { firestore } from "firebase/app";
+import firebase from "firebase/app";
 import "firebase/analytics";
 import "firebase/firestore";
 import "firebase/auth";
 import { Task } from "../reducers/tasks.type";
-import {
-  TaskSyncType,
-  TomatoSyncType,
-  CollectionName,
-  RawStateType,
-} from "./firebase.type";
-import { useDispatch } from "react-redux";
-import { useState, useEffect } from "react";
-import { syncTask } from "../actions/task";
+import { CollectionName, RawStateType } from "./firebase.type";
 import { Timer } from "../reducers/timer.types";
 
 firebase.initializeApp(firebaseConfig);

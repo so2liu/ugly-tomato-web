@@ -15,10 +15,12 @@ function NewTask(props: NewTask) {
     resetMinuteEachTomato,
     MinuteEachTomatoInput,
   ] = useInput("Minutes per Tomato", "number");
-  const [tags, resetTags, TagInput, TagBadge] = useTags(
+
+  const [tagString, resetTags, TagInput] = useInput(
     "Tag Names",
     "Tags should be split with space."
   );
+  const [tags, TagBadge] = useTags(tagString);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

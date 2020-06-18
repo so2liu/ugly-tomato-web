@@ -17,15 +17,14 @@ const useWebsocket = <T>(
       .where(...equalCondition)
       .orderBy("updatedAt", "desc")
       .onSnapshot((snapshot) => {
-        const newState = snapshot.docs.map((doc) => {
-          return { ...(doc.data() as T), firestoreID: doc.id };
-        });
+        const newState = snapshot.docs.map((doc) => doc.data() as T);
         if (!_.isEqual(state, newState)) setState(newState);
+        console.log("run");
       });
     return () => {
       unsubsribe();
     };
-  }, [collection, equalCondition]);
+  }, [collection, equalCondition, state]);
 
   return state;
 };
@@ -35,5 +34,5 @@ export const useSyncTasks = (uid: string) => {
   const tasks = useWebsocket([] as TaskSyncType[], "tasks", ["uid", "==", uid]);
   useEffect(() => {
     dispatch(syncTask(tasks));
-  }, [tasks, dispatch, syncTask]);
+  }, [tasks, dispatch]);
 };

@@ -1,10 +1,13 @@
-import React, { useState, useReducer } from "react";
+import React, { useState } from "react";
 import TaskCard from "./TaskCard";
 import { Task } from "../reducers/tasks.type";
 import { startTimer } from "../actions/timer";
 import { doneTaskAsync, deleteTaskAsync } from "../actions/task";
-import produce from "immer";
-import { ButtonGroup, Button } from "react-bootstrap";
+import { Form } from "react-bootstrap";
+import { useSyncTasks } from "../hooks/firebase";
+import { useSelector } from "react-redux";
+import { RootState } from "../reducers";
+import { useTags } from "../hooks/UI";
 
 interface props {
   tasks: Task[];
@@ -15,30 +18,37 @@ interface props {
 const TaskList = (props: props) => {
   const { tasks } = props;
 
-  const [state, dispatch] = useReducer(showDoneReducer, initState);
+  const [showClosed, setShowClosed] = useState(false);
 
-  function handleToggleShowDone(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) {
-    event.preventDefault();
-    dispatch({ type: "Toggle" });
-  }
+  const uid = useSelector((state: RootState) => state.user.uid);
+  useSyncTasks(uid);
+
+  const [tags, Tags, clickedTag] = useTags(
+    tasks.map((t) => t.label.join(" ")).join(" ")
+  );
 
   return (
     <>
       <h3>Task List</h3>
-      <ButtonGroup aria-label="Basic example">
-        <Button variant="info" size="sm" onClick={handleToggleShowDone}>
-          Undo
-        </Button>
-        <Button variant="secondary" size="sm" onClick={handleToggleShowDone}>
-          Done
-        </Button>
-      </ButtonGroup>
-      <br />
-      <br />
+      <Form.Group controlId="formBasicCheckbox">
+        <Form.Check
+          type="checkbox"
+          label="Show closed tasks"
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setShowClosed(e.target.checked);
+          }}
+        />
+      </Form.Group>
+      {Tags}
       {tasks
-        .filter((t) => t.isDone === state.showDone)
+        .filter((t) => {
+          if (showClosed) return t;
+          return t.isDone === false;
+        })
+        .filter((t) => {
+          if (clickedTag) return t.label.includes(clickedTag);
+          return true;
+        })
         .map((task) => (
           <TaskCard
             key={task.id}
@@ -53,17 +63,3 @@ const TaskList = (props: props) => {
 };
 
 export default TaskList;
-
-const initState = {
-  showDone: false,
-};
-function showDoneReducer(state: typeof initState, action: { type: string }) {
-  switch (action.type) {
-    case "Toggle":
-      return produce(state, (draft) => {
-        draft.showDone = !draft.showDone;
-      });
-    default:
-      return state;
-  }
-}

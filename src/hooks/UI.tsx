@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Form, Badge } from "react-bootstrap";
+import { Form, Badge, Button, Container } from "react-bootstrap";
 import { UseInputType, UseTagsType } from "./UI.type";
+import uniq from "lodash/uniq";
 
 export function useInput(
   label: string,
@@ -33,50 +34,47 @@ export function useInput(
   return [state, reset, Input];
 }
 
-export function useTags(
-  label: string,
-  type: string = "text",
-  hint?: string
-): UseTagsType {
-  const [value, reset, Input] = useInput(label, type, hint);
-
+export function useTags(value: string): UseTagsType {
   const list: string[] = value
     .split(" ")
     .filter((tag) => tag.trim().length > 0);
-  const uniqueList = list.filter((tag, index) => list.indexOf(tag) === index);
+  const uniqueList = uniq(list);
+
+  const [clicked, setClicked] = useState("");
+
   const Tags = (
-    <>
-      {uniqueList.map((tag) => (
-        <Badge key={tag} variant="success">
+    <div style={{ marginTop: 10, marginBottom: 10 }}>
+      {uniqueList.map((tag, index) => (
+        <Button
+          key={tag}
+          size="sm"
+          variant={index % 2 === 0 ? "outline-primary" : "outline-secondary"}
+          style={{ marginRight: 10 }}
+          onClick={() => {
+            setClicked(tag);
+          }}
+        >
           {tag}
-        </Badge>
+        </Button>
       ))}
-    </>
+    </div>
   );
-  return [list, reset, Input, Tags];
+  return [uniqueList, Tags, clicked];
 }
 
-export function useNotification(
-  title: string,
-  condition: () => boolean,
-  deps: any[]
-) {
+export function useNotification(title: string, condition: () => boolean) {
   useEffect(() => {
-    if (Notification.permission == "default") Notification.requestPermission();
-  }, [Notification.permission]);
+    if (Notification.permission === "default") Notification.requestPermission();
+  }, []);
 
   useEffect(() => {
     if (condition()) {
       new Notification(title);
     }
-  }, deps);
+  }, [title, condition]);
 }
 
-export function useAskBeforeClose(
-  title: string,
-  condition: () => boolean,
-  deps: any[]
-) {
+export function useAskBeforeClose(title: string, condition: () => boolean) {
   useEffect(() => {
     if (condition()) {
       window.onbeforeunload = function (e: BeforeUnloadEvent) {
@@ -89,5 +87,5 @@ export function useAskBeforeClose(
     } else {
       window.onbeforeunload = null;
     }
-  }, deps);
+  }, [condition]);
 }
