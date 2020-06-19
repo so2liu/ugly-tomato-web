@@ -17,7 +17,7 @@ function App() {
 
   return (
     <Provider store={store}>
-      <Container>
+      <Container style={{ marginBottom: "5%" }}>
         <AppHeader />
         <ControlLogin />
         <TaskPage />
