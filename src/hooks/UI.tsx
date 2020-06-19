@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Badge, Button, Container } from "react-bootstrap";
-import { UseInputType, UseTagsType } from "./UI.type";
+import { UseInputType, UseTagsType } from "./types";
 import uniq from "lodash/uniq";
 
 export function useInput(

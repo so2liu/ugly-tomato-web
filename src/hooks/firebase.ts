@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import _ from "lodash";
 import { useDispatch } from "react-redux";
 import { TaskSyncType } from "../API/firebase.type";
 import { syncTask } from "../actions/task";
 import { db } from "../API/firebase";
+import { EqualConditionType } from "./types";
 
 const useWebsocket = <T>(
   initState: T[],
   collection: string,
-  equalCondition: [string, "==", string]
+  equalCondition: EqualConditionType
 ) => {
   const [state, setState] = useState(initState);
   useEffect(() => {
@@ -18,21 +19,23 @@ const useWebsocket = <T>(
       .orderBy("updatedAt", "desc")
       .onSnapshot((snapshot) => {
         const newState = snapshot.docs.map((doc) => doc.data() as T);
-        if (!_.isEqual(state, newState)) setState(newState);
-        console.log("run");
+        setState(newState);
       });
     return () => {
       unsubsribe();
     };
-  }, [collection, equalCondition, state]);
+  }, [equalCondition, collection]);
 
   return state;
 };
 
 export const useSyncTasks = (uid: string) => {
   const dispatch = useDispatch();
-  const tasks = useWebsocket([] as TaskSyncType[], "tasks", ["uid", "==", uid]);
+  const equalCondition: EqualConditionType = useMemo(() => ["uid", "==", uid], [
+    uid,
+  ]);
+  const tasks = useWebsocket([] as TaskSyncType[], "tasks", equalCondition);
   useEffect(() => {
     dispatch(syncTask(tasks));
-  }, [tasks, dispatch]);
+  }, [dispatch, tasks]);
 };
