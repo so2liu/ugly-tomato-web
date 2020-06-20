@@ -16,14 +16,20 @@ interface TimerCard {
 function TimerCard(props: TimerCard) {
   const { timer, onStopTimer } = props;
 
-  useNotification("⚡️Timeout! Take a break.", timer.status === "timeout");
+  useNotification("🍔Timeout! Take a break.", timer.status === "timeout");
 
-  usePageTitle("⚡️Timeout!", timer.status === "timeout");
+  usePageTitle("⚡️Running!", timer.status === "running");
+  usePageTitle("🍔Timeout!", timer.status === "timeout");
 
   useAskBeforeClose(
     "Close page will lost your current timer.",
     timer.status === "running" || timer.status === "timeout"
   );
+
+  function handleStopTimer(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    e.preventDefault();
+    onStopTimer();
+  }
 
   return (
     <>
@@ -32,7 +38,7 @@ function TimerCard(props: TimerCard) {
         <Card.Body>
           <Card.Title> {secToTimer(timer.remainSecs)}</Card.Title>
           {["running", "timeout"].includes(timer.status) && (
-            <Button onClick={onStopTimer}>Stop Working</Button>
+            <Button onClick={handleStopTimer}>Stop Working</Button>
           )}
         </Card.Body>
       </Card>
