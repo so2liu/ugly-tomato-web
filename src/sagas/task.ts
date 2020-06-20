@@ -1,22 +1,17 @@
 import { TaskCreateAsync, TaskDoneAsync, TaskDeleteAsync } from "./task.type";
-import { put, call, takeEvery, select, delay } from "redux-saga/effects";
+import { put, call, takeEvery, select } from "redux-saga/effects";
 import { Task } from "../reducers/tasks.type";
 import { generateID } from "../utils";
 import { createTask, doneTask } from "../actions/task";
-import {
-  addTaskOnServer,
-  markTaskSyncOnServer,
-  markTaskDoneServer,
-  deleteTaskOnServer,
-} from "../API/firebase";
+import { setTaskOnServer, deleteTaskOnServer } from "../API/firebase";
 import { RootState } from "../reducers";
+import produce from "immer";
 
 function* appendTask(action: TaskCreateAsync) {
   const uid: string = yield select((state: RootState) => state.user.uid);
   const newTask: Task = {
     uid: uid,
     id: generateID("task"),
-    firestoreID: "",
     title: action.payload.title,
     label: action.payload.label,
     isSync: false,
@@ -26,8 +21,10 @@ function* appendTask(action: TaskCreateAsync) {
     minuteEachTomato: action.payload.minuteEachTomato,
   };
   yield put(createTask(newTask));
-  const res = yield call(addTaskOnServer, newTask);
-  yield call(markTaskSyncOnServer, res.id);
+  const newTaskToServer = produce(newTask, (draft) => {
+    draft.isSync = true;
+  });
+  const res = yield call(setTaskOnServer, newTaskToServer);
 }
 
 export function* watchTaskCreate() {
@@ -35,11 +32,12 @@ export function* watchTaskCreate() {
 }
 
 function* finishTask(action: TaskDoneAsync) {
-  const { id, firestoreID, value } = action.payload;
+  const { id, value } = action.payload;
   yield put(doneTask(id, value));
-
-  yield call(markTaskDoneServer, firestoreID, value);
-  yield delay(500);
+  const updatedTask = yield select((state: RootState) =>
+    state.tasks.find((t) => t.id === id)
+  );
+  yield call(setTaskOnServer, updatedTask);
 }
 
 export function* watchTaskFinish() {
@@ -47,7 +45,7 @@ export function* watchTaskFinish() {
 }
 
 function* deleteTask(action: TaskDeleteAsync) {
-  yield call(deleteTaskOnServer, action.payload.firestoreID);
+  yield call(deleteTaskOnServer, action.payload.id);
 }
 export function* watchTaskDelete() {
   yield takeEvery(TaskDeleteAsync, deleteTask);

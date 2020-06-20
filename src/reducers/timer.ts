@@ -13,7 +13,7 @@ import { Task } from "./tasks.type";
 const initTimer = (
   uid: string = "placeholder",
   planMinutes: number = 25,
-  task: Task | null = null,
+  taskID: string = "",
   status: TimerStatus = "standby"
 ): Timer => ({
   uid,
@@ -21,7 +21,7 @@ const initTimer = (
   startAt: new Date(),
   endAt: null,
   planMinutes,
-  task,
+  taskID,
   status,
   remainSecs: planMinutes * 60,
   isSync: false,
@@ -31,8 +31,8 @@ function timer(state: Timer = initTimer(), action: TimerActionType): Timer {
   if (action.name !== "timer") return state;
   switch (action.type) {
     case TimerStart:
-      const { uid, planMinutes, task } = action.payload;
-      return initTimer(uid, planMinutes, task, "running");
+      const { uid, planMinutes, taskID } = action.payload;
+      return initTimer(uid, planMinutes, taskID, "running");
 
     case TimerTick:
       return produce(state, (draft) => {

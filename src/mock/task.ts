@@ -4,7 +4,6 @@ import { generateID } from "../utils";
 const generateTask = (seed: number): Task => ({
   uid: generateID("uid"),
   id: generateID("task"),
-  firestoreID: "",
   title: `Title ${seed}`,
   label: [],
   isSync: false,

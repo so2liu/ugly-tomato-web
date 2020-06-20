@@ -6,7 +6,7 @@ export interface Timer {
   startAt: Date;
   endAt: Date | null;
   planMinutes: number;
-  task: Task | null;
+  taskID: string;
   status: TimerStatus;
   remainSecs: number;
   isSync: boolean;
@@ -27,7 +27,7 @@ interface TimerStart {
   payload: {
     uid: string;
     planMinutes: number;
-    task?: Task;
+    taskID: string;
   };
 }
 

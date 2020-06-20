@@ -44,14 +44,10 @@ export const doneTask = (id: string, value: boolean): TaskActionType => ({
   payload: { id, value },
 });
 
-export const doneTaskAsync = (
-  id: string,
-  firestoreID: string,
-  value: boolean
-): TaskDoneAsync => ({
+export const doneTaskAsync = (id: string, value: boolean): TaskDoneAsync => ({
   name: "task",
   type: TaskDoneAsync,
-  payload: { id, firestoreID, value },
+  payload: { id, value },
 });
 
 export const doneTomato = (
@@ -66,8 +62,8 @@ export const doneTomato = (
   },
 });
 
-export const deleteTaskAsync = (firestoreID: string): TaskDeleteAsync => ({
+export const deleteTaskAsync = (id: string): TaskDeleteAsync => ({
   name: "task",
   type: TaskDeleteAsync,
-  payload: { firestoreID },
+  payload: { id },
 });

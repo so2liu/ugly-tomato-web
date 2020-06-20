@@ -4,9 +4,10 @@ import { RootState } from "../reducers";
 import { TimerStart, Timer } from "../reducers/timer.types";
 import { TimerStopAsync } from "./timer.type";
 import {
-  addTimerOnServer,
+  setTimerOnServer,
   markTimerAsSyncOnServer,
-  updateTaskOnServer,
+  // updateTaskOnServer,
+  setTaskOnServer,
 } from "../API/firebase";
 import { Task } from "../reducers/tasks.type";
 import { doneTomato } from "../actions/task";
@@ -14,7 +15,9 @@ import { doneTomato } from "../actions/task";
 function* tick() {
   const selectStatus = (state: RootState) => state.timer.status;
 
-  while (["standby", "running"].includes(yield select(selectStatus))) {
+  while (
+    ["standby", "running", "timeout"].includes(yield select(selectStatus))
+  ) {
     yield delay(1000);
     yield put(tickTimer());
   }
@@ -27,22 +30,19 @@ export function* watchTick() {
 function* stopTimerChain() {
   yield put(stopTimer());
   const timer: Timer = yield select((state: RootState) => state.timer);
-  const taskID: string = yield select(
-    (state: RootState) => state.timer.task?.id
-  );
-  const task: Task = yield select((state: RootState) => state.timer.task);
+  const taskID: string = yield select((state: RootState) => state.timer.taskID);
   const plusMinutes =
     (new Date().getTime() - timer.startAt.getTime()) / 1000 / 60;
 
-  yield put(doneTomato(task.id, plusMinutes));
+  yield put(doneTomato(taskID, plusMinutes));
 
-  const newTask: Task = yield select((state: RootState) =>
+  const updatedTask: Task = yield select((state: RootState) =>
     state.tasks.find((t) => t.id === taskID)
   );
-  yield call(updateTaskOnServer, task.firestoreID, newTask);
 
-  const res = yield call(addTimerOnServer, timer);
-  yield call(markTimerAsSyncOnServer, res.id);
+  yield call(setTaskOnServer, updatedTask);
+
+  yield call(setTimerOnServer, timer);
 }
 
 export function* watchStopTimer() {

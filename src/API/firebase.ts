@@ -34,16 +34,12 @@ const setOnServer = async (
     version: "v1",
     isSync: true,
   };
-  if (firestoreID) {
-    await db.collection(collection).doc(firestoreID).set(readyAdd);
-    return {
-      id: firestoreID,
-      path: `${collection}/${firestoreID}`,
-    };
-  } else {
-    const docRef = await db.collection(collection).add(readyAdd);
-    return { id: docRef.id, path: docRef.path };
-  }
+
+  await db.collection(collection).doc(readyAdd.id).set(readyAdd);
+  return {
+    id: readyAdd.id,
+    path: `${collection}/${firestoreID}`,
+  };
 };
 
 const deleteOnServer = async (
@@ -63,16 +59,12 @@ export const markTaskDoneServer = (firestoreID: string, value: boolean) => {
   return markOnServer(firestoreID, "tasks", { isDone: value });
 };
 
-export const updateTaskOnServer = (firestoreID: string, task: Task) => {
-  return setOnServer("tasks", task, firestoreID);
-};
+// export const updateTaskOnServer = (firestoreID: string, task: Task) => {
+//   return setOnServer("tasks", task, firestoreID);
+// };
 
-export const addTaskOnServer = (task: Task) => {
+export const setTaskOnServer = (task: Task) => {
   return setOnServer("tasks", task);
-};
-
-export const markTaskSyncOnServer = (firestoreID: string) => {
-  return db.collection("tasks").doc(firestoreID).update({ isSync: true });
 };
 
 export const deleteTaskOnServer = (firestoreID: string) => {
@@ -84,6 +76,6 @@ export const markTimerAsSyncOnServer = (firestoreID: string) => {
   return markOnServer(firestoreID, "tomatoes", { isSync: true });
 };
 
-export const addTimerOnServer = async (tomato: Timer) => {
+export const setTimerOnServer = async (tomato: Timer) => {
   return setOnServer("tomatoes", tomato);
 };

@@ -13,5 +13,5 @@ export interface TomatoSyncType extends Timer {
   firestoreID?: string;
 }
 
-export type RawStateType = Task | User | Timer;
-export type CollectionName = "tasks" | "users" | "tomatoes";
+export type RawStateType = Task | Timer;
+export type CollectionName = "tasks" | "tomatoes";

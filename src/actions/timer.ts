@@ -10,14 +10,14 @@ import { TimerStopAsync, TimerActionAsync } from "../sagas/timer.type";
 export const startTimer = (
   uid: string,
   planMinutes: number,
-  task?: Task
+  taskID: string
 ): TimerActionType => ({
   name: "timer",
   type: TimerStart,
   payload: {
     uid,
     planMinutes,
-    task,
+    taskID,
   },
 });
 

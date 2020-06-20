@@ -15,7 +15,6 @@ export interface TaskDoneAsync {
   type: typeof TaskDoneAsync;
   payload: {
     id: string;
-    firestoreID: string;
     value: boolean;
   };
 }
@@ -24,7 +23,7 @@ export const TaskDeleteAsync = "delete a task on server";
 export interface TaskDeleteAsync {
   name: "task";
   type: typeof TaskDeleteAsync;
-  payload: { firestoreID: string };
+  payload: { id: string };
 }
 
 // export type TaskActionAsyncType = TaskCreateAsync | TaskDoneAsync;

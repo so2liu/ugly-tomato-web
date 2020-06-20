@@ -15,7 +15,7 @@ interface Props {
 }
 const TaskCard = (props: Props) => {
   const { task, onStartTimer, onFinishTask, onDeleteTask } = props;
-  const { title, isSync, isDone, id, firestoreID } = task;
+  const { title, isSync, isDone, id } = task;
   const uid = useSelector((state: RootState) => state.user.uid);
   const status = useSelector((state: RootState) => state.timer.status);
 
@@ -23,19 +23,19 @@ const TaskCard = (props: Props) => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) {
     e.preventDefault();
-    onStartTimer(uid, task.minuteEachTomato, task);
+    onStartTimer(uid, task.minuteEachTomato, task.id);
   }
 
   function handleToggleDone(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) {
     e.preventDefault();
-    onFinishTask(id, firestoreID, !isDone);
+    onFinishTask(id, !isDone);
   }
 
   function handleDelete(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.preventDefault();
-    onDeleteTask(firestoreID);
+    onDeleteTask(id);
   }
 
   const StartBtn = <Button onClick={handleStartTimer}>Start</Button>;

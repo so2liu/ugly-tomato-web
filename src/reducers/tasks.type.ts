@@ -1,7 +1,6 @@
 export interface Task {
   readonly uid: string;
   readonly id: string;
-  firestoreID: string;
   title: string;
   label: string[];
   isSync: boolean;

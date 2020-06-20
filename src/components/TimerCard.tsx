@@ -2,7 +2,12 @@ import React from "react";
 import { Card, Button } from "react-bootstrap";
 import { Timer } from "../reducers/timer.types";
 import { stopTimerAsync } from "../actions/timer";
-import { useNotification, useAskBeforeClose } from "../hooks/UI";
+import {
+  useNotification,
+  useAskBeforeClose,
+  usePageTitle,
+} from "../hooks/window";
+import { secToTimer } from "../utils";
 
 interface TimerCard {
   timer: Timer;
@@ -11,11 +16,13 @@ interface TimerCard {
 function TimerCard(props: TimerCard) {
   const { timer, onStopTimer } = props;
 
-  useNotification("Timeout! Take a break.", () => timer.status === "timeout");
+  useNotification("⚡️Timeout! Take a break.", timer.status === "timeout");
+
+  usePageTitle("⚡️Timeout!", timer.status === "timeout");
 
   useAskBeforeClose(
-    "Close page with running timer will lost your current timer data. Do you really want to close page?",
-    () => timer.status === "running"
+    "Close page will lost your current timer.",
+    timer.status === "running" || timer.status === "timeout"
   );
 
   return (
@@ -23,9 +30,7 @@ function TimerCard(props: TimerCard) {
       <h3>Timer Card</h3>
       <Card bg={timer.status === "timeout" ? "danger" : undefined}>
         <Card.Body>
-          <Card.Title>
-            {new Date(timer.remainSecs * 1000).toISOString().substr(11, 8)}
-          </Card.Title>
+          <Card.Title> {secToTimer(timer.remainSecs)}</Card.Title>
           {["running", "timeout"].includes(timer.status) && (
             <Button onClick={onStopTimer}>Stop Working</Button>
           )}

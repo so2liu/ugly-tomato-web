@@ -11,7 +11,7 @@ function TaskPage() {
   return (
     <>
       <h2>Task Page</h2>
-      {status === "running" && <ControlTimer />}
+      {(status === "running" || status === "timeout") && <ControlTimer />}
       <br />
       <ControlTaskList />
       <br />

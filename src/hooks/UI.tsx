@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { UseInputType, UseTagsType } from "./types";
 import uniq from "lodash/uniq";
@@ -59,32 +59,4 @@ export function useTags(rawTags: string[], disable?: boolean): UseTagsType {
     </div>
   );
   return [uniqueList, Tags, clicked];
-}
-
-export function useNotification(title: string, condition: () => boolean) {
-  useEffect(() => {
-    if (Notification.permission === "default") Notification.requestPermission();
-  }, []);
-
-  useEffect(() => {
-    if (condition()) {
-      new Notification(title);
-    }
-  }, [title, condition]);
-}
-
-export function useAskBeforeClose(title: string, condition: () => boolean) {
-  useEffect(() => {
-    if (condition()) {
-      window.onbeforeunload = function (e: BeforeUnloadEvent) {
-        e = e || window.event;
-        if (e) {
-          e.returnValue = title;
-        }
-        return title;
-      };
-    } else {
-      window.onbeforeunload = null;
-    }
-  }, [condition, title]);
 }

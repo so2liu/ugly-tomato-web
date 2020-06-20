@@ -20,7 +20,7 @@ function NewTask(props: NewTask) {
     "Tag Names",
     "Tags should be split with space."
   );
-  const [tags, TagBadge] = useTags(tagString.split(" "));
+  const [tags, TagBadge] = useTags(tagString.split(" "), true);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
