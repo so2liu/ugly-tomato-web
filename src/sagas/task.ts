@@ -26,13 +26,8 @@ function* appendTask(action: TaskCreateAsync) {
     minuteEachTomato: action.payload.minuteEachTomato,
   };
   yield put(createTask(newTask));
-  try {
-    const res = yield call(addTaskOnServer, newTask);
-    console.log({ res });
-    yield call(markTaskSyncOnServer, res.id);
-  } catch (error) {
-    console.log(error);
-  }
+  const res = yield call(addTaskOnServer, newTask);
+  yield call(markTaskSyncOnServer, res.id);
 }
 
 export function* watchTaskCreate() {

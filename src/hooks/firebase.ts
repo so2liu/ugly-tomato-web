@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import _ from "lodash";
 import { useDispatch } from "react-redux";
 import { TaskSyncType } from "../API/firebase.type";
 import { syncTask } from "../actions/task";
@@ -17,6 +16,7 @@ const useWebsocket = <T>(
       .collection(collection)
       .where(...equalCondition)
       .orderBy("updatedAt", "desc")
+      .limit(30)
       .onSnapshot((snapshot) => {
         const newState = snapshot.docs.map((doc) => doc.data() as T);
         setState(newState);

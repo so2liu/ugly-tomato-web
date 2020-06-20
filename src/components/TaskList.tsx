@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import TaskCard from "./TaskCard";
 import { Task } from "../reducers/tasks.type";
 import { startTimer } from "../actions/timer";
@@ -23,8 +23,24 @@ const TaskList = (props: props) => {
   const uid = useSelector((state: RootState) => state.user.uid);
   useSyncTasks(uid);
 
-  const [tags, Tags, clickedTag] = useTags(
-    tasks.map((t) => t.label.join(" ")).join(" ")
+  const tasksByClosed = useMemo(
+    () =>
+      tasks.filter((t) => {
+        if (showClosed) return t;
+        return t.isDone === false;
+      }),
+    [tasks, showClosed]
+  );
+  const [, Tags, clickedTag] = useTags(
+    tasksByClosed.map((t) => t.label).flat()
+  );
+  const tasksByTag = useMemo(
+    () =>
+      tasksByClosed.filter((t) => {
+        if (clickedTag) return t.label.includes(clickedTag);
+        return true;
+      }),
+    [tasksByClosed, clickedTag]
   );
 
   return (
@@ -40,24 +56,15 @@ const TaskList = (props: props) => {
         />
       </Form.Group>
       {Tags}
-      {tasks
-        .filter((t) => {
-          if (showClosed) return t;
-          return t.isDone === false;
-        })
-        .filter((t) => {
-          if (clickedTag) return t.label.includes(clickedTag);
-          return true;
-        })
-        .map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onStartTimer={props.onStartTimer}
-            onFinishTask={props.onFinishTask}
-            onDeleteTask={props.onDeleteTask}
-          />
-        ))}
+      {tasksByTag.map((task) => (
+        <TaskCard
+          key={task.id}
+          task={task}
+          onStartTimer={props.onStartTimer}
+          onFinishTask={props.onFinishTask}
+          onDeleteTask={props.onDeleteTask}
+        />
+      ))}
     </>
   );
 };

@@ -82,7 +82,7 @@ const TaskCard = (props: Props) => {
     </>
   );
 
-  const [, Tags] = useTags(task.label.join(" "));
+  const [, Tags] = useTags(task.label, true);
 
   return (
     <>
@@ -100,7 +100,7 @@ const TaskCard = (props: Props) => {
               </ButtonGroup>
             </Col>
             <Col>{DeleteBtn}</Col>
-            <Col xs={6} />
+            <Col md={6} xs={0} />
           </Row>
         </Card.Body>
       </Card>

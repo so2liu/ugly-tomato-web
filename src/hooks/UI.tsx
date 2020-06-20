@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Badge, Button, Container } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import { UseInputType, UseTagsType } from "./types";
 import uniq from "lodash/uniq";
 
@@ -15,7 +15,7 @@ export function useInput(
   }
 
   const Input = (
-    <>
+    <Form.Group>
       <Form.Label>{label}</Form.Label>
       <Form.Control
         type={type}
@@ -24,7 +24,7 @@ export function useInput(
         onChange={handleChange}
       />
       {hint && <Form.Text className="text-muted">{hint}</Form.Text>}
-    </>
+    </Form.Group>
   );
 
   function reset() {
@@ -34,10 +34,8 @@ export function useInput(
   return [state, reset, Input];
 }
 
-export function useTags(value: string): UseTagsType {
-  const list: string[] = value
-    .split(" ")
-    .filter((tag) => tag.trim().length > 0);
+export function useTags(rawTags: string[], disable?: boolean): UseTagsType {
+  const list: string[] = rawTags.filter((tag) => tag.trim().length > 0);
   const uniqueList = uniq(list);
 
   const [clicked, setClicked] = useState("");
@@ -53,6 +51,7 @@ export function useTags(value: string): UseTagsType {
           onClick={() => {
             setClicked(tag);
           }}
+          disabled={disable}
         >
           {tag}
         </Button>
@@ -87,5 +86,5 @@ export function useAskBeforeClose(title: string, condition: () => boolean) {
     } else {
       window.onbeforeunload = null;
     }
-  }, [condition]);
+  }, [condition, title]);
 }
