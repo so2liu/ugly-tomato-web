@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 
 export function useNotification(title: string, condition: boolean) {
   useEffect(() => {
@@ -39,4 +39,11 @@ export function usePageTitle(title: string, condition: boolean) {
       window.document.title = oldTitle.current;
     };
   }, [title, condition]);
+}
+
+export function useSoundNotice(src: string, condition: boolean) {
+  const audio = useMemo(() => new Audio(src), [src]);
+  useEffect(() => {
+    if (condition) audio.play();
+  }, [src, condition]);
 }

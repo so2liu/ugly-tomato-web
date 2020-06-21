@@ -60,3 +60,32 @@ export function useTags(rawTags: string[], disable?: boolean): UseTagsType {
   );
   return [uniqueList, Tags, clicked];
 }
+
+export function useChoose<T>(
+  choices: T[],
+  defaultChoice: T,
+  type: "checkbox" | "radio" = "radio",
+  callback?: (c: T) => void
+): [T, JSX.Element] {
+  const [state, setState] = useState(defaultChoice);
+
+  const handleChoose = (c: T) => {
+    setState(c);
+    if (callback) callback(c);
+  };
+
+  const Group = (
+    <>
+      {choices.map((c) => (
+        <Form.Check
+          label={String(c)}
+          key={String(c)}
+          type={type}
+          checked={state === c}
+          onChange={() => handleChoose(c)}
+        />
+      ))}
+    </>
+  );
+  return [state, Group];
+}

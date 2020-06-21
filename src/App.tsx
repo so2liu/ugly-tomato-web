@@ -9,6 +9,13 @@ import { Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ControlLogin from "./containers/ControlLogin";
 import AppHeader from "./components/AppHeader";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
+import SettingPage from "./pages/SettingPage";
 
 function App() {
   const sagaMiddleware = createSagaMiddleware();
@@ -16,13 +23,23 @@ function App() {
   sagaMiddleware.run(rootSaga);
 
   return (
-    <Provider store={store}>
-      <Container style={{ marginBottom: "5%" }}>
+    <Router>
+      <Provider store={store}>
         <AppHeader />
-        <ControlLogin />
-        <TaskPage />
-      </Container>
-    </Provider>
+        <Container style={{ marginBottom: "5%" }}>
+          <ControlLogin />
+          <Switch>
+            <Route path="/tasks">
+              <TaskPage />
+            </Route>
+            <Route path="/settings">
+              <SettingPage />
+            </Route>
+            <Redirect from="/" exact to="/tasks" />
+          </Switch>
+        </Container>
+      </Provider>
+    </Router>
   );
 }
 

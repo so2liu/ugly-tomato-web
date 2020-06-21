@@ -2,16 +2,19 @@ import { Task } from "../reducers/tasks.type";
 import firebase from "./firebase";
 import { Timer } from "../reducers/timer.types";
 import { User } from "../reducers/user.type";
-export interface TaskSyncType extends Task {
+
+interface Server {
   updatedAt: firebase.firestore.FieldValue;
   version: "v1";
 }
 
-export interface TomatoSyncType extends Timer {
-  updatedAt: firebase.firestore.FieldValue;
-  version: "v1";
+export interface TaskSyncType extends Task, Server {}
+
+export interface TomatoSyncType extends Timer, Server {
   firestoreID?: string;
 }
 
-export type RawStateType = Task | Timer;
-export type CollectionName = "tasks" | "tomatoes";
+export interface UserSyncType extends User, Server {}
+
+export type RawStateType = Task | Timer | User;
+export type CollectionName = "tasks" | "tomatoes" | "users";

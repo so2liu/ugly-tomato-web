@@ -1,13 +1,25 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../reducers";
+import ControlNavbar from "../containers/ControlNavbar";
+import { Container } from "react-bootstrap";
+import { useSyncUser } from "../hooks/firebase";
 
 function AppHeader() {
   const user = useSelector((state: RootState) => state.user);
+  useSyncUser(user.uid);
   return (
-    <>
-      <h1>Ugly Tomato for {user.displayName ?? "QiQi"}</h1>
-    </>
+    <div
+      style={{
+        paddingLeft: "5%",
+        paddingRight: "5%",
+        margin: 0,
+        width: "100%",
+        backgroundColor: "lightgrey",
+      }}
+    >
+      <ControlNavbar />
+    </div>
   );
 }
 
