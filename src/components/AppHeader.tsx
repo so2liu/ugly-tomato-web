@@ -2,7 +2,6 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../reducers";
 import ControlNavbar from "../containers/ControlNavbar";
-import { Container } from "react-bootstrap";
 import { useSyncUser } from "../hooks/firebase";
 
 function AppHeader() {

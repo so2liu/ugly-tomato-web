@@ -1,3 +1,4 @@
+import "./utils/why-did-you-render";
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";

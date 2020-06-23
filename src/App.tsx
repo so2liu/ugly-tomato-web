@@ -16,6 +16,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import SettingPage from "./pages/SettingPage";
+import RecordPage from "./pages/RecordPage";
 
 function App() {
   const sagaMiddleware = createSagaMiddleware();
@@ -29,9 +30,8 @@ function App() {
         <Container style={{ marginBottom: "5%" }}>
           <ControlLogin />
           <Switch>
-            <Route path="/tasks">
-              <TaskPage />
-            </Route>
+            <Route path="/tasks" component={TaskPage} />
+            <Route path="/records" component={RecordPage} />
             <Route path="/settings">
               <SettingPage />
             </Route>

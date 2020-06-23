@@ -35,6 +35,9 @@ function TopNavbar(props: TopNavbar) {
         <NavLink to="/tasks" activeStyle={navActiveStyle}>
           Task
         </NavLink>
+        <NavLink to="/records" activeStyle={navActiveStyle}>
+          Records
+        </NavLink>
         <NavLink to="/settings" activeStyle={navActiveStyle}>
           Setting
         </NavLink>

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
-import { UseInputType, UseTagsType } from "./types";
+import { UseTagsType } from "./types";
 import uniq from "lodash/uniq";
 
 export function useInput(
   label: string,
   type: string = "text",
   hint?: string
-): UseInputType {
+): [string, () => void, JSX.Element] {
   const [state, setState] = useState("");
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {

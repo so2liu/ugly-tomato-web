@@ -7,6 +7,7 @@ import { Task } from "../reducers/tasks.type";
 import { CollectionName, RawStateType } from "./firebase.type";
 import { Timer } from "../reducers/timer.types";
 import { User } from "../reducers/user.type";
+import { Todo } from "../pages/RecordPage";
 
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
@@ -84,4 +85,10 @@ export const setTimerOnServer = (tomato: Timer) => {
 export const setUserOnServer = (user: User) => {
   console.log("call setUser", user.uid);
   return setOnServer("users", user, user.uid);
+};
+
+// ===== toto =====
+export const setTodoOnServer = (todo: Todo) => {
+  console.log(todo);
+  return setOnServer("todo", todo, todo.id);
 };

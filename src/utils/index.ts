@@ -23,3 +23,16 @@ export function secToTimer(inputSec: number): string {
     ` ${fixBits(hour)}:${fixBits(minute)}:${fixBits(second)}`
   );
 }
+
+export function loadingAppStateFromLocalStorage<T>(
+  blankState: T,
+  keyName: string
+): T {
+  const stringifiedJSON: string | null = window.localStorage.getItem(keyName);
+  if (typeof stringifiedJSON === "string") {
+    const loaded: T = JSON.parse(stringifiedJSON);
+    return loaded;
+  }
+
+  return blankState;
+}

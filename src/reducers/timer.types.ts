@@ -14,7 +14,7 @@ export interface Timer {
 
 export type TimerStatus = "standby" | "running" | "stop" | "timeout";
 
-export type TypeName = "timer" | "task" | "uid";
+export type TypeName = "timer" | "task" | "uid" | "record" | "todo";
 
 export const TimerStart = "start a timer";
 export const TimerTimeout = "timer is timeout";

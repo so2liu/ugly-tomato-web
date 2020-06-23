@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useReducer } from "react";
 
 export function useNotification(title: string, condition: boolean) {
   useEffect(() => {
@@ -46,4 +46,10 @@ export function useSoundNotice(src: string, condition: boolean) {
   useEffect(() => {
     if (condition) audio.play();
   }, [src, condition]);
+}
+
+export function useSaveInLocalStorage<T>(state: T, keyName: string) {
+  useEffect(() => {
+    window.localStorage.setItem(keyName, JSON.stringify(state));
+  }, [state, keyName]);
 }
