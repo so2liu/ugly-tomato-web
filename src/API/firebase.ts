@@ -90,5 +90,5 @@ export const setUserOnServer = (user: User) => {
 // ===== toto =====
 export const setTodoOnServer = (todo: Todo) => {
   console.log(todo);
-  return setOnServer("todo", todo, todo.id);
+  return setOnServer("todo", todo, todo.info.id);
 };
