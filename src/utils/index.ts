@@ -36,3 +36,14 @@ export function loadingAppStateFromLocalStorage<T>(
 
   return blankState;
 }
+
+interface withStartEnd {
+  startAt: number;
+  endAt: number;
+}
+export function calTotalSecFromRecords<T extends withStartEnd>(
+  records: T[]
+): number {
+  const ms = records.reduce((pre, cur) => cur.endAt - cur.startAt + pre, 0);
+  return Math.floor(ms / 1000);
+}

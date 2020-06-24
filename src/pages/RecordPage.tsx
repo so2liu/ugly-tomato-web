@@ -11,20 +11,28 @@ import {
   loadingAppStateFromLocalStorage,
   generateID,
   secToTimer,
+  calTotalSecFromRecords,
 } from "../utils";
 import { useSaveInLocalStorage } from "../hooks/window";
 import { useInput } from "../hooks/UI";
 import { delay } from "lodash";
-import WrapJSON from "../components/WrapJSON";
 import { useSelector } from "react-redux";
 import { RootState } from "../reducers";
 import { setTodoOnServer } from "../API/firebase";
 import moment from "moment";
+import WrapJSON from "../components/WrapJSON";
 
 function RecordPage() {
   const uid = useSelector((state: RootState) => state.user.uid);
   const initialTodo = loadingAppStateFromLocalStorage<Todo[]>([], "todo");
-  const [todo, dispatchTodo] = useReducer(todoReducer, initialTodo);
+  const [todo, dispatchTodo] = useReducer(
+    todoReducer,
+    produce(initialTodo, (draft) => {
+      draft.forEach((d) => {
+        d.totalSec = calTotalSecFromRecords(d.records);
+      });
+    })
+  );
   useSaveInLocalStorage(todo, "todo");
 
   const initialRecord = loadingAppStateFromLocalStorage(
@@ -51,16 +59,9 @@ function RecordPage() {
   useEffect(() => {
     const changedTodo = todo.find((t) => t.id === changedTodoID);
     if (changedTodo) setTodoOnServer(changedTodo);
-  }, [changedTodoID]);
+  }, [changedTodoID, todo]);
 
-  const CurrentTimer = (
-    <Timer
-      record={record}
-      onStop={() => {
-        handleStop(record.todoID, record);
-      }}
-    />
-  );
+  const CurrentTimer = <Timer record={record} />;
 
   return (
     <>
@@ -71,34 +72,41 @@ function RecordPage() {
           dispatchTodo(create(title, uid));
         }}
       />
-      {todo.map((t) => (
-        <Fragment key={t.id}>
-          <Container style={{ margin: 0, marginTop: "5%", padding: 0 }}>
-            <TodoCard
-              todo={t}
-              Timer={record.todoID === t.id ? CurrentTimer : undefined}
-              onStart={(todoID) => {
-                dispatchRecord(start(todoID));
-              }}
-              onStop={() => {
-                handleStop(record.todoID, record);
-              }}
-              onDelete={(todoID) => {
-                console.log(todoID);
-                dispatchTodo(deleteTodo(todoID));
-              }}
-              onToggleDone={(todoID) => dispatchTodo(toogleDone(todoID))}
-            />
-          </Container>
-        </Fragment>
-      ))}
+      {todo
+        .filter((t) => !t.isDeleted)
+        .map((t) => (
+          <Fragment key={t.id}>
+            <Container style={{ margin: 0, marginTop: "5%", padding: 0 }}>
+              <TodoCard
+                todo={t}
+                Timer={record.todoID === t.id ? CurrentTimer : undefined}
+                onStart={(todoID) => {
+                  dispatchRecord(start(todoID));
+                  setChangedTodoID(todoID);
+                }}
+                onStop={() => {
+                  handleStop(record.todoID, record);
+                  setChangedTodoID(record.todoID);
+                }}
+                onDelete={(todoID) => {
+                  dispatchTodo(deleteTodo(todoID));
+                  setChangedTodoID(todoID);
+                }}
+                onToggleDone={(todoID) => {
+                  dispatchTodo(toogleDone(todoID));
+                  setChangedTodoID(todoID);
+                }}
+              />
+            </Container>
+          </Fragment>
+        ))}
     </>
   );
 }
 export default RecordPage;
 
-function Timer(props: { record: Record; onStop: Dispatch<void> }) {
-  const { record, onStop } = props;
+function Timer(props: { record: Record }) {
+  const { record } = props;
 
   const [sec, setSec] = useState(-1);
   useEffect(() => {
@@ -160,6 +168,10 @@ function TodoCard(props: {
       <Card.Body>
         <Card.Title>{todo.title}</Card.Title>
         {Timer}
+        <Card.Text>
+          Already done for{" "}
+          {moment.duration(todo.totalSec, "seconds").humanize()}
+        </Card.Text>
         <ButtonGroup>
           {!todo.isDone && StartStop}
           <Button variant="info" onClick={handleToogleDone}>
@@ -169,6 +181,7 @@ function TodoCard(props: {
             Delete
           </Button>
         </ButtonGroup>
+        {process.env.NODE_ENV === "development" && <WrapJSON json={todo} />}
       </Card.Body>
     </Card>
   );
@@ -201,6 +214,8 @@ export type Todo = {
   title: string;
   updatedAt: number;
   isDone: boolean;
+  isDeleted: boolean;
+  totalSec: number;
   records: { startAt: number; endAt: number; recordID: string }[];
 };
 
@@ -234,6 +249,8 @@ const create = (title: string, uid: string): TodoAction => ({
     title,
     updatedAt: new Date().getTime(),
     isDone: false,
+    isDeleted: false,
+    totalSec: 0,
     records: [],
   },
 });
@@ -267,7 +284,7 @@ const todoReducer = (state: Todo[], action: TodoAction): Todo[] => {
     case "ToggleDone":
       return produce(state, (draft) => {
         const index = draft.findIndex((d) => d.id === action.payload.id);
-        if (index) {
+        if (index > -1) {
           draft[index].isDone = !draft[index].isDone;
         }
       });
@@ -275,7 +292,7 @@ const todoReducer = (state: Todo[], action: TodoAction): Todo[] => {
       return produce(state, (draft) => {
         const index = draft.findIndex((d) => d.id === action.payload.id);
         if (index > -1) {
-          draft.splice(index, 1);
+          draft[index].isDeleted = true;
         }
       });
     case "AppedRecordForTodo":
@@ -284,6 +301,7 @@ const todoReducer = (state: Todo[], action: TodoAction): Todo[] => {
         if (index > -1) {
           const { recordID, startAt, endAt } = action.payload;
           draft[index].records.push({ recordID, startAt, endAt });
+          draft[index].totalSec += (endAt - startAt) / 1000;
         }
       });
     default:
