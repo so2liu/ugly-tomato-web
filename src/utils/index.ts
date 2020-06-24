@@ -26,11 +26,13 @@ export function secToTimer(inputSec: number): string {
 
 export function loadingAppStateFromLocalStorage<T>(
   blankState: T,
-  keyName: string
+  keyName: string,
+  chooseBlankState?: (loaded: T) => boolean
 ): T {
   const stringifiedJSON: string | null = window.localStorage.getItem(keyName);
   if (typeof stringifiedJSON === "string") {
     const loaded: T = JSON.parse(stringifiedJSON);
+    if (chooseBlankState && chooseBlankState(loaded)) return blankState;
     return loaded;
   }
 

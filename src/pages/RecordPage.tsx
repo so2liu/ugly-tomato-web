@@ -37,7 +37,8 @@ function RecordPage() {
 
   const initialRecord = loadingAppStateFromLocalStorage(
     blankRecord(),
-    "record"
+    "record",
+    (loaded: Record) => Boolean(loaded.endAt)
   );
   const [record, dispatchRecord] = useReducer(recordReducer, initialRecord);
   useSaveInLocalStorage(record, "record");
@@ -122,7 +123,13 @@ function Timer(props: { record: Record }) {
     }
   }, [sec, record]);
 
-  return <p>{secToTimer(Math.max(sec, 0))}</p>;
+  return (
+    <>
+      {" "}
+      <p>{secToTimer(Math.max(sec, 0))}</p>
+      {process.env.NODE_ENV === "development" && <WrapJSON json={record} />}
+    </>
+  );
 }
 
 function TodoCard(props: {
@@ -168,10 +175,12 @@ function TodoCard(props: {
       <Card.Body>
         <Card.Title>{todo.title}</Card.Title>
         {Timer}
-        <Card.Text>
-          Already done for{" "}
-          {moment.duration(todo.totalSec, "seconds").humanize()}
-        </Card.Text>
+        {todo.totalSec > 0 && (
+          <Card.Text>
+            Already done for{" "}
+            {moment.duration(todo.totalSec, "seconds").humanize()}
+          </Card.Text>
+        )}
         <ButtonGroup>
           {!todo.isDone && StartStop}
           <Button variant="info" onClick={handleToogleDone}>
