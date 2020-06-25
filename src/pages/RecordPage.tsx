@@ -4,47 +4,47 @@ import React, {
   useState,
   useEffect,
   Fragment,
-} from "react";
-import { Card, Button, ButtonGroup, Container } from "react-bootstrap";
-import produce from "immer";
+} from 'react';
+import { Card, Button, ButtonGroup, Container } from 'react-bootstrap';
+import produce from 'immer';
 import {
   loadingAppStateFromLocalStorage,
   generateID,
   secToTimer,
   calTotalSecFromRecords,
-} from "../utils";
-import { useSaveInLocalStorage } from "../hooks/window";
-import { useInput } from "../hooks/UI";
-import { delay } from "lodash";
-import { useSelector } from "react-redux";
-import { RootState } from "../reducers";
-import { setTodoOnServer } from "../API/firebase";
-import moment from "moment";
-import WrapJSON from "../components/WrapJSON";
-import { SetState } from "immer/dist/internal";
+} from '../utils';
+import { useSaveInLocalStorage } from '../hooks/window';
+import { useInput } from '../hooks/UI';
+import { delay } from 'lodash';
+import { useSelector } from 'react-redux';
+import { RootState } from '../reducers';
+import { setTodoOnServer } from '../API/firebase';
+import moment from 'moment';
+import WrapJSON from '../components/WrapJSON';
 
 function RecordPage() {
   const uid = useSelector((state: RootState) => state.user.uid);
-  const initialTodo = loadingAppStateFromLocalStorage<Todo[]>([], "todo");
+  const initialTodo = loadingAppStateFromLocalStorage<Todo[]>([], 'todo');
   const [todo, dispatchTodo] = useReducer(
     todoReducer,
     produce(initialTodo, (draft) => {
       draft.forEach((d) => {
         d.totalSec = calTotalSecFromRecords(d.records);
       });
-    })
+    }),
   );
-  useSaveInLocalStorage(todo, "todo");
+
+  useSaveInLocalStorage(todo, 'todo');
 
   const initialRecord = loadingAppStateFromLocalStorage(
     blankRecord(),
-    "record",
-    (loaded: Record) => Boolean(loaded.endAt)
+    'record',
+    (loaded: Record) => Boolean(loaded.endAt),
   );
   const [record, dispatchRecord] = useReducer(recordReducer, initialRecord);
-  useSaveInLocalStorage(record, "record");
+  useSaveInLocalStorage(record, 'record');
 
-  const [changedTodoID, setChangedTodoID] = useState("");
+  const [changedTodoID, setChangedTodoID] = useState('');
   function handleStop(todoID: string, record: Record) {
     dispatchRecord(stop());
     dispatchTodo(
@@ -52,8 +52,8 @@ function RecordPage() {
         todoID,
         record.id,
         record.startAt,
-        new Date().getTime()
-      )
+        new Date().getTime(),
+      ),
     );
     setChangedTodoID(todoID);
   }
@@ -75,15 +75,15 @@ function RecordPage() {
           dispatchTodo(create(title, uid));
         }}
       />
-      <Container style={{ margin: 0, marginTop: "5%", padding: 0 }}>
+      <Container style={{ margin: 0, marginTop: '5%', padding: 0 }}>
         <ToggleOpenTabs showDone={showDone} setShowDone={setShowDone} />
       </Container>
       {todo
-        .filter((t) => t.status !== "deleted")
-        .filter((t) => (showDone ? true : t.status !== "done"))
+        .filter((t) => t.status !== 'deleted')
+        .filter((t) => (showDone ? true : t.status !== 'done'))
         .map((t) => (
           <Fragment key={t.info.id}>
-            <Container style={{ margin: 0, marginTop: "5%", padding: 0 }}>
+            <Container style={{ margin: 0, marginTop: '5%', padding: 0 }}>
               <TodoCard
                 todo={t}
                 btnGroup={
@@ -157,9 +157,9 @@ function Timer(props: { record: Record }) {
 
   const [sec, setSec] = useState(-1);
   useEffect(() => {
-    if (record.status === "running") {
+    if (record.status === 'running') {
       const periodSec = Math.floor(
-        (new Date().getTime() - record.startAt) / 1000
+        (new Date().getTime() - record.startAt) / 1000,
       );
       const timerID = delay(setSec, 1000, periodSec);
       return () => {
@@ -170,9 +170,9 @@ function Timer(props: { record: Record }) {
 
   return (
     <>
-      {" "}
+      {' '}
       <p>{secToTimer(Math.max(sec, 0))}</p>
-      {process.env.NODE_ENV === "development" && <WrapJSON json={record} />}
+      {process.env.NODE_ENV === 'development' && <WrapJSON json={record} />}
     </>
   );
 }
@@ -186,10 +186,10 @@ function TodoBtnGroup(props: {
   onToggleDone: () => void;
 }) {
   const { todo, record, onStart, onStop, onDelete, onToggleDone } = props;
-  const enableStartStopByTodo: TodoStatus[] = ["standby", "doing"];
+  const enableStartStopByTodo: TodoStatus[] = ['standby', 'doing'];
   const enableStartStopByRecord =
-    record.status === "standby" ||
-    (record.status === "running" && record.todoID === todo.info.id);
+    record.status === 'standby' ||
+    (record.status === 'running' && record.todoID === todo.info.id);
 
   const StartBtn = (
     <Button variant="secondary" onClick={onStart}>
@@ -203,7 +203,7 @@ function TodoBtnGroup(props: {
     </Button>
   );
 
-  const StartStop = todo.status === "standby" ? StartBtn : StopBtn;
+  const StartStop = todo.status === 'standby' ? StartBtn : StopBtn;
 
   const CloseBtn = (
     <Button variant="info" onClick={onToggleDone}>
@@ -217,7 +217,7 @@ function TodoBtnGroup(props: {
     </Button>
   );
 
-  const CloseOpenBtn = todo.status === "done" ? OpenBtn : CloseBtn;
+  const CloseOpenBtn = todo.status === 'done' ? OpenBtn : CloseBtn;
 
   const DeleteBtn = (
     <Button variant="danger" onClick={onDelete}>
@@ -225,10 +225,10 @@ function TodoBtnGroup(props: {
     </Button>
   );
 
-  const enableCloseOpenByTodo: TodoStatus[] = ["standby", "done"];
+  const enableCloseOpenByTodo: TodoStatus[] = ['standby', 'done'];
   const enableCloseOpenByRecord =
-    record.status === "standby" ||
-    (record.status === "running" && record.todoID !== todo.info.id);
+    record.status === 'standby' ||
+    (record.status === 'running' && record.todoID !== todo.info.id);
   return (
     <ButtonGroup>
       {enableStartStopByTodo.includes(todo.status) &&
@@ -249,12 +249,7 @@ function TodoCard(props: {
   btnGroup: JSX.Element;
   Timer?: JSX.Element;
 }) {
-  const {
-    todo,
-    btnGroup,
-
-    Timer,
-  } = props;
+  const { todo, btnGroup, Timer } = props;
 
   return (
     <Card>
@@ -262,7 +257,7 @@ function TodoCard(props: {
       <Card.Body>
         <Card.Title
           style={{
-            textDecoration: todo.status === "done" ? "line-through" : "",
+            textDecoration: todo.status === 'done' ? 'line-through' : '',
           }}
         >
           {todo.title}
@@ -270,15 +265,15 @@ function TodoCard(props: {
         <Card.Subtitle className="mb-2 text-muted">
           {todo.totalSec > 0 && (
             <Card.Text>
-              Already done for{" "}
-              {moment.duration(todo.totalSec, "seconds").humanize()}
+              Already done for{' '}
+              {moment.duration(todo.totalSec, 'seconds').humanize()}
             </Card.Text>
           )}
         </Card.Subtitle>
         {Timer}
 
         {btnGroup}
-        {process.env.NODE_ENV === "development" && <WrapJSON json={todo} />}
+        {process.env.NODE_ENV === 'development' && <WrapJSON json={todo} />}
       </Card.Body>
     </Card>
   );
@@ -286,7 +281,7 @@ function TodoCard(props: {
 
 function CreateTodoCard(props: { onCreate: Dispatch<string> }) {
   const { onCreate } = props;
-  const [title, resetTitle, TitleInput] = useInput("Todo");
+  const [title, resetTitle, TitleInput] = useInput('Todo');
   function onAdd() {
     onCreate(title);
     resetTitle();
@@ -321,7 +316,7 @@ export type Todo = {
   totalSec: number;
   records: { startAt: number; endAt: number; recordID: string }[];
 };
-type TodoStatus = "standby" | "doing" | "done" | "deleted";
+type TodoStatus = 'standby' | 'doing' | 'done' | 'deleted';
 type TodoAction =
   | CreateTodo
   | ToggleDoneTodo
@@ -329,48 +324,48 @@ type TodoAction =
   | DeleteTodo
   | StartTodo;
 type CreateTodo = {
-  type: "Create";
+  type: 'Create';
   payload: Todo;
 };
 type StartTodo = {
-  type: "StartTodo";
+  type: 'StartTodo';
   payload: { id: string };
 };
 type ToggleDoneTodo = {
-  type: "ToggleDone";
+  type: 'ToggleDone';
   payload: { id: string };
 };
 type AppendRecordForTodo = {
-  type: "AppedRecordForTodo";
+  type: 'AppedRecordForTodo';
   payload: { id: string; recordID: string; startAt: number; endAt: number };
 };
 type DeleteTodo = {
-  type: "DeleteTodo";
+  type: 'DeleteTodo';
   payload: { id: string };
 };
 
 const create = (title: string, uid: string): TodoAction => ({
-  type: "Create",
+  type: 'Create',
   payload: {
     info: {
       uid,
-      id: generateID("todo"),
+      id: generateID('todo'),
       createdAt: new Date().getTime(),
     },
     title,
-    status: "standby",
+    status: 'standby',
     totalSec: 0,
     records: [],
   },
 });
 
 const startTodo = (id: string): TodoAction => ({
-  type: "StartTodo",
+  type: 'StartTodo',
   payload: { id },
 });
 
 const toogleDone = (id: string): TodoAction => ({
-  type: "ToggleDone",
+  type: 'ToggleDone',
   payload: { id },
 });
 
@@ -378,55 +373,55 @@ const appendRecordForTodo = (
   id: string,
   recordID: string,
   startAt: number,
-  endAt: number
+  endAt: number,
 ): TodoAction => ({
-  type: "AppedRecordForTodo",
+  type: 'AppedRecordForTodo',
   payload: { id, recordID, startAt, endAt },
 });
 
 const deleteTodo = (id: string): TodoAction => ({
-  type: "DeleteTodo",
+  type: 'DeleteTodo',
   payload: { id },
 });
 
 const todoReducer = (state: Todo[], action: TodoAction): Todo[] => {
   switch (action.type) {
-    case "Create":
+    case 'Create':
       return produce(state, (draft) => {
         draft.unshift(action.payload);
       });
-    case "StartTodo":
+    case 'StartTodo':
       return produce(state, (draft) => {
         const index = draft.findIndex((d) => d.info.id === action.payload.id);
         if (index > -1) {
-          draft[index].status = "doing";
+          draft[index].status = 'doing';
         }
       });
-    case "ToggleDone":
+    case 'ToggleDone':
       return produce(state, (draft) => {
         const index = draft.findIndex((d) => d.info.id === action.payload.id);
         if (index > -1) {
           // switch between 'done' and 'standby
           draft[index].status =
-            draft[index].status === "done" ? "standby" : "done";
+            draft[index].status === 'done' ? 'standby' : 'done';
         }
       });
-    case "DeleteTodo":
+    case 'DeleteTodo':
       return produce(state, (draft) => {
         const index = draft.findIndex((d) => d.info.id === action.payload.id);
         console.log(index);
         if (index > -1) {
-          draft[index].status = "deleted";
+          draft[index].status = 'deleted';
         }
       });
-    case "AppedRecordForTodo":
+    case 'AppedRecordForTodo':
       return produce(state, (draft) => {
         const index = draft.findIndex((d) => d.info.id === action.payload.id);
         if (index > -1) {
           const { recordID, startAt, endAt } = action.payload;
           draft[index].records.push({ recordID, startAt, endAt });
           draft[index].totalSec += (endAt - startAt) / 1000;
-          draft[index].status = "standby";
+          draft[index].status = 'standby';
         }
       });
     default:
@@ -443,27 +438,27 @@ type Record = {
   startAt: number;
   endAt: number | null;
 };
-type RecordStatus = "standby" | "running";
+type RecordStatus = 'standby' | 'running';
 type StartAction = {
-  type: "Start";
+  type: 'Start';
   payload: Record;
 };
 
 type StopAction = {
-  type: "Stop";
+  type: 'Stop';
 };
 
 type RecordAction = StartAction | StopAction;
 
 const recordReducer = (state: Record, action: RecordAction): Record => {
   switch (action.type) {
-    case "Start":
+    case 'Start':
       return action.payload;
 
-    case "Stop":
+    case 'Stop':
       return produce(state, (draft) => {
         draft.endAt = new Date().getTime();
-        draft.status = "standby";
+        draft.status = 'standby';
       });
     default:
       return state;
@@ -471,24 +466,24 @@ const recordReducer = (state: Record, action: RecordAction): Record => {
 };
 
 const start = (todoID: string): RecordAction => ({
-  type: "Start",
+  type: 'Start',
   payload: {
-    id: generateID("record"),
+    id: generateID('record'),
     todoID,
-    status: "running",
+    status: 'running',
     startAt: new Date().getTime(),
     endAt: null,
   },
 });
 
 const stop = (): RecordAction => ({
-  type: "Stop",
+  type: 'Stop',
 });
 
 const blankRecord = (): Record => ({
-  id: "",
-  todoID: "",
-  status: "standby",
+  id: '',
+  todoID: '',
+  status: 'standby',
   startAt: new Date().getTime(),
   endAt: null,
 });
