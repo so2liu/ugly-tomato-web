@@ -48,12 +48,7 @@ function RecordPage() {
   function handleStop(todoID: string, record: Record) {
     dispatchRecord(stop());
     dispatchTodo(
-      appendRecordForTodo(
-        todoID,
-        record.id,
-        record.startAt,
-        new Date().getTime(),
-      ),
+      appendRecordForTodo(todoID, record.id, record.startAt, Date.now()),
     );
     setChangedTodoID(todoID);
   }
@@ -158,9 +153,7 @@ function Timer(props: { record: Record }) {
   const [sec, setSec] = useState(-1);
   useEffect(() => {
     if (record.status === 'running') {
-      const periodSec = Math.floor(
-        (new Date().getTime() - record.startAt) / 1000,
-      );
+      const periodSec = Math.floor((Date.now() - record.startAt) / 1000);
       const timerID = delay(setSec, 1000, periodSec);
       return () => {
         clearTimeout(timerID);
@@ -350,7 +343,7 @@ const create = (title: string, uid: string): TodoAction => ({
     info: {
       uid,
       id: generateID('todo'),
-      createdAt: new Date().getTime(),
+      createdAt: Date.now(),
     },
     title,
     status: 'standby',
@@ -457,7 +450,7 @@ const recordReducer = (state: Record, action: RecordAction): Record => {
 
     case 'Stop':
       return produce(state, (draft) => {
-        draft.endAt = new Date().getTime();
+        draft.endAt = Date.now();
         draft.status = 'standby';
       });
     default:
@@ -471,7 +464,7 @@ const start = (todoID: string): RecordAction => ({
     id: generateID('record'),
     todoID,
     status: 'running',
-    startAt: new Date().getTime(),
+    startAt: Date.now(),
     endAt: null,
   },
 });
@@ -484,6 +477,6 @@ const blankRecord = (): Record => ({
   id: '',
   todoID: '',
   status: 'standby',
-  startAt: new Date().getTime(),
+  startAt: Date.now(),
   endAt: null,
 });
