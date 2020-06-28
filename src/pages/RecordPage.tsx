@@ -58,7 +58,9 @@ function RecordPage() {
     if (changedTodo) setTodoOnServer(changedTodo);
   }, [changedTodoID, todo]);
 
-  const CurrentTimer = <Timer record={record} />;
+  const CurrentTimer = (planSec: number) => (
+    <Timer record={record} planSec={planSec} />
+  );
 
   const [showDone, setShowDone] = useState(false);
   return (
@@ -66,8 +68,8 @@ function RecordPage() {
       <h2>RecordPage</h2>
 
       <CreateTodoCard
-        onCreate={(title) => {
-          dispatchTodo(create(title, uid));
+        onCreate={(title, planSec) => {
+          dispatchTodo(create(title, uid, planSec));
         }}
       />
       <Container style={{ margin: 0, marginTop: '5%', padding: 0 }}>
@@ -108,7 +110,11 @@ function RecordPage() {
                     }}
                   />
                 }
-                Timer={record.todoID === t.info.id ? CurrentTimer : undefined}
+                Timer={
+                  record.todoID === t.info.id
+                    ? CurrentTimer(t.planSec)
+                    : undefined
+                }
               />
             </Container>
           </Fragment>
@@ -147,8 +153,8 @@ function ToggleOpenTabs(props: {
   );
 }
 
-function Timer(props: { record: Record }) {
-  const { record } = props;
+function Timer(props: { record: Record; planSec: number }) {
+  const { record, planSec } = props;
 
   const [sec, setSec] = useState(-1);
   useEffect(() => {
@@ -161,10 +167,15 @@ function Timer(props: { record: Record }) {
     }
   }, [sec, record]);
 
+  // Display countdown when inside the plan duration, and countup otherwise
+  const displayTime = secToTimer(
+    Math.max(sec > planSec ? sec - planSec : planSec - sec, 0),
+  );
+
   return (
     <>
       {' '}
-      <p>{secToTimer(Math.max(sec, 0))}</p>
+      <p>{displayTime}</p>
       {process.env.NODE_ENV === 'development' && <WrapJSON json={record} />}
     </>
   );
@@ -272,18 +283,26 @@ function TodoCard(props: {
   );
 }
 
-function CreateTodoCard(props: { onCreate: Dispatch<string> }) {
+function CreateTodoCard(props: {
+  onCreate: (title: string, planSec: number) => void;
+}) {
   const { onCreate } = props;
   const [title, resetTitle, TitleInput] = useInput('Todo');
+  const [planMin, resetPlanMin, PlanMinInput] = useInput(
+    'Plan minutes',
+    'number',
+  );
   function onAdd() {
-    onCreate(title);
+    onCreate(title, +planMin * 60);
     resetTitle();
+    resetPlanMin();
   }
   return (
     <Card>
       <Card.Body>
         <Card.Title>New Todo</Card.Title>
         {TitleInput}
+        {PlanMinInput}
         <Button variant="secondary" onClick={onAdd}>
           Add
         </Button>
@@ -306,6 +325,7 @@ export type Todo = {
   //   isDeleted: boolean;
   // };
   title: string;
+  planSec: number;
   totalSec: number;
   records: { startAt: number; endAt: number; recordID: string }[];
 };
@@ -337,7 +357,7 @@ type DeleteTodo = {
   payload: { id: string };
 };
 
-const create = (title: string, uid: string): TodoAction => ({
+const create = (title: string, uid: string, planSec: number): TodoAction => ({
   type: 'Create',
   payload: {
     info: {
@@ -347,6 +367,7 @@ const create = (title: string, uid: string): TodoAction => ({
     },
     title,
     status: 'standby',
+    planSec,
     totalSec: 0,
     records: [],
   },
